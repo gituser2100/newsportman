@@ -1,4 +1,4 @@
-const { Bot, InlineKeyboard, session } = require('grammy');
+const { Bot, InlineKeyboard, session, webhookCallback } = require('grammy');
 
 
 // Replace 'YOUR_BOT_TOKEN' with your actual bot token
