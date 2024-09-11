@@ -349,21 +349,3 @@ bot.hears("ping", async (ctx) => {
 
 
 
-
-
-// testing new features
-
-// Create a simple menu.
-const firstMenu = new Menu("my-menu-identifier")
-.text(
-    (ctx) => `Greet ${ctx.from?.first_name ?? "me"}!`, // dynamic label
-    (ctx) => ctx.reply(`Hello ${ctx.from.first_name}!`), // handler
-  );
-// Make it interactive.
-bot.use(firstMenu);
-
-
-bot.command("menu", async (ctx) => {
-    await ctx.reply(`Hello ${ctx.from.first_name}`, {reply_markup: firstMenu})
-})
-
