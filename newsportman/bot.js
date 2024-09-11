@@ -13,7 +13,38 @@ app.use(webhookCallback(bot, 'express'))
 
 const endpoint = process.env.BOT_ENDPOINT
 
-bot.api.setWebhook(endpoint)
+
+async function manageWebhook(bot, newWebhookUrl){
+    try{
+        const webhookInfo = await bot.api.getWebhookInfo();
+
+        if(webhookInfo.url){
+            console.log(`Webhook is active`)
+            
+            if(webhookInfo.url !== newWebhookUrl){
+                console.log('Deleting current webhook...')
+                await bot.api.deleteWebhook();
+                console.log('Webhook has been deleted')
+            }else{
+                console.log('new webhook url is same as the current one');
+                return
+            }
+            
+            
+        }else{
+            console.log('no webhook is currently active.');
+        }
+
+        // now set the new webhook since none is active.
+        console.log('Setting a new webhook...');
+        await bot.api.setWebhook(newWebhookUrl)
+        console.log('new webhook has been set')
+    }catch(error){
+        console.error('An error occurred when setting the webhook, ', error)
+    }
+}
+
+manageWebhook(bot, endpoint)
 
 const port = process.env.PORT_NUBER;
 
