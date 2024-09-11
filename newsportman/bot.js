@@ -7,46 +7,29 @@ const bot = new Bot(process.env.BOT_API_TOKEN);
 const express = require('express');
 
 const app = express();
+
 app.use(express.json());
 
 app.use(webhookCallback(bot, 'express'))
 
 const endpoint = process.env.BOT_ENDPOINT
 
+bot.api.setWebhook(endpoint)
 
-async function manageWebhook(bot, newWebhookUrl){
-    try{
-        const webhookInfo = await bot.api.getWebhookInfo();
+app.post('/webhook', (req, res) => {
+    bot.handleUpdate(req.body);
+    res.sendStatus(200)
+})
 
-        if(webhookInfo.url){
-            console.log(`Webhook is active`)
-            
-            if(webhookInfo.url !== newWebhookUrl){
-                console.log('Deleting current webhook...')
-                await bot.api.deleteWebhook();
-                console.log('Webhook has been deleted')
-            }else{
-                console.log('new webhook url is same as the current one');
-                return
-            }
-            
-            
-        }else{
-            console.log('no webhook is currently active.');
-        }
+const port = process.env.PORT
 
-        // now set the new webhook since none is active.
-        console.log('Setting a new webhook...');
-        await bot.api.setWebhook(newWebhookUrl)
-        console.log('new webhook has been set')
-    }catch(error){
-        console.error('An error occurred when setting the webhook, ', error)
-    }
-}
 
-manageWebhook(bot, endpoint)
+app.listen(port, () => {
+    console.log(`Bot is running and listening for updates on port -> ${port}`)
+})
+// manage the webhook state
 
-const port = process.env.PORT_NUBER;
+app.use(webhookCallback(bot, 'express'))
 
 app.listen(port, () => {
     console.log(`Bot is running and listening for updates on port -> ${port}`)
